@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://cdn.modrinth.com https://mc-heads.net data:; style-src 'self'; script-src 'self'">
+<title>Astral</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<img class="art" src="../assets/star.png" alt="">
+
+<header class="topbar">
+  <nav class="glass pill nav">
+    <span class="nav-ind" id="navInd"></span>
+    <span class="logo"><img src="../assets/star-logo.png" alt="Astral"></span>
+    <button class="tab active" data-view="play">Играть</button>
+    <button class="tab" data-view="builds">Сборки</button>
+    <button class="tab" data-view="mods">Моды</button>
+    <button class="tab" data-view="settings">Настройки</button>
+  </nav>
+  <div class="glass pill account">
+    <span class="avatar"><canvas id="avatar" width="32" height="32"></canvas></span>
+    <label for="nick" class="sr">Ник игрока</label>
+    <input id="nick" data-key="nick" type="text" placeholder="Ник" maxlength="16" autocomplete="off">
+  </div>
+</header>
+
+<main id="view-play" class="view hero">
+  <div class="switcher">
+    <button id="prevBuild" class="btn round" aria-label="Предыдущая сборка"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2.5L4.5 7 9 11.5"/></svg></button>
+    <span id="buildCount" class="count">1 / 1</span>
+    <button id="nextBuild" class="btn round" aria-label="Следующая сборка"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5L9.5 7 5 11.5"/></svg></button>
+    <button id="allBuilds" class="btn small">Все сборки</button>
+  </div>
+  <div id="buildSlide" class="slide">
+  <label for="build" class="eyebrow">СБОРКА</label>
+  <input id="build" data-key="build" class="title" type="text" placeholder="Название сборки" autocomplete="off">
+  <div class="meta">
+    <button id="verBtn" class="btn chipbtn" aria-haspopup="listbox" aria-expanded="false"><span id="verLabel">1.21.11</span><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5l3 3 3-3"/></svg></button>
+    <div class="seg glass" role="group" aria-label="Загрузчик"><span class="seg-ind" id="segInd"></span><button class="segbtn" data-loader="fabric">Fabric</button><button class="segbtn" data-loader="vanilla">Vanilla</button></div>
+    <div id="verPop" class="vpop glass" hidden>
+      <input id="verSearch" class="field" type="text" placeholder="Поиск версии" aria-label="Поиск версии" autocomplete="off">
+      <div class="fams" id="verFams"></div>
+      <div id="verList" class="vlist" role="listbox" aria-label="Версии"></div>
+    </div>
+  </div>
+  </div>
+  <div class="actions">
+    <button id="play" class="btn primary big">ИГРАТЬ</button>
+    <button id="folder" class="btn big2">Папка игры</button>
+  </div>
+  <div class="progress" id="progress" hidden><div id="bar"></div></div>
+  <p id="statusText" class="status" role="status"></p>
+</main>
+
+<main id="view-builds" class="view panel" hidden>
+  <h2>Сборки</h2>
+  <p class="hint">Каждая сборка хранит свои моды, конфиги и настройки игры.</p>
+  <div class="toolbar">
+    <button id="bCreate" class="btn">Создать</button>
+    <button id="bImportFile" class="btn">Импорт файла</button>
+    <button id="bImportFolder" class="btn">Импорт папки</button>
+  </div>
+  <p id="bMsg" class="hint" role="status"></p>
+  <div id="bGrid" class="bgrid"></div>
+</main>
+
+<main id="view-mods" class="view panel" hidden>
+  <h2>Моды</h2>
+  <p class="hint" id="modCtx"></p>
+  <div class="toolbar">
+    <button class="btn sub active" data-sub="search">Поиск</button>
+    <button class="btn sub" data-sub="installed">Установленные</button>
+  </div>
+  <div class="toolbar" id="searchBar">
+    <label for="modQuery" class="sr">Поиск модов</label>
+    <input id="modQuery" class="field" type="text" placeholder="Название мода (Modrinth)">
+    <button id="modSearch" class="btn">Найти</button>
+  </div>
+  <p id="modMsg" class="hint" role="status"></p>
+  <div id="modList" class="list"></div>
+</main>
+
+<main id="view-settings" class="view panel" hidden>
+  <h2>Настройки</h2>
+
+  <section class="glass card">
+    <h3>Аккаунт</h3>
+    <p id="accStatus" class="hint"></p>
+    <div class="toolbar">
+      <button id="msLogin" class="btn">Войти через Microsoft</button>
+      <button id="msLogout" class="btn" hidden>Выйти</button>
+    </div>
+    <label for="accountType" class="eyebrow">РЕЖИМ ВХОДА</label>
+    <select id="accountType" data-key="accountType" class="field"><option value="offline">По нику (без лицензии)</option><option value="microsoft">Microsoft (лицензия)</option></select>
+    <p id="accMsg" class="hint" role="status"></p>
+  </section>
+
+  <section class="glass card">
+    <h3>Игра</h3>
+    <label class="check"><input type="checkbox" data-key="snapshots"> Показывать снапшоты</label>
+    <div class="two">
+      <div><label for="width" class="eyebrow">ШИРИНА ОКНА</label><input id="width" data-key="width" class="field" type="number" min="320" max="7680"></div>
+      <div><label for="height" class="eyebrow">ВЫСОТА ОКНА</label><input id="height" data-key="height" class="field" type="number" min="240" max="4320"></div>
+    </div>
+    <label class="check"><input type="checkbox" data-key="fullscreen"> Полноэкранный режим</label>
+    <label for="afterLaunch" class="eyebrow">ПОСЛЕ ЗАПУСКА ИГРЫ</label>
+    <select id="afterLaunch" data-key="afterLaunch" class="field"><option value="keep">Оставить лаунчер открытым</option><option value="minimize">Свернуть лаунчер</option></select>
+    <label for="gameDirView" class="eyebrow">ПАПКА ИГРЫ</label>
+    <div class="toolbar"><input id="gameDirView" class="field" type="text" readonly placeholder="По умолчанию"><button id="chooseDir" class="btn">Выбрать</button><button id="resetDir" class="btn">Сброс</button></div>
+  </section>
+
+  <section class="glass card">
+    <h3>Память и Java</h3>
+    <div class="row"><label for="ramMax">Максимум памяти</label><span class="rangeval" data-for="ramMax"></span></div>
+    <input id="ramMax" data-key="ramMax" type="range" min="2" max="16" step="1">
+    <div class="row"><label for="ramMin">Минимум памяти</label><span class="rangeval" data-for="ramMin"></span></div>
+    <input id="ramMin" data-key="ramMin" type="range" min="1" max="16" step="1">
+    <label for="javaPath" class="eyebrow">ПУТЬ К JAVA (НЕ ОБЯЗАТЕЛЬНО, СКАЧАЕТСЯ САМА)</label>
+    <input id="javaPath" data-key="javaPath" class="field" type="text" placeholder="java">
+    <label for="jvmArgs" class="eyebrow">АРГУМЕНТЫ JVM</label>
+    <input id="jvmArgs" data-key="jvmArgs" class="field" type="text" placeholder="-XX:+UseG1GC">
+  </section>
+
+  <section class="glass card">
+    <h3>Сборка и лаунчер</h3>
+    <label for="manifestUrl" class="eyebrow">МАНИФЕСТ МОДОВ (URL, НЕОБЯЗАТЕЛЬНО)</label>
+    <input id="manifestUrl" data-key="manifestUrl" class="field" type="text" placeholder="https://.../manifest.json">
+    <label for="curseKey" class="eyebrow">CURSEFORGE API-КЛЮЧ (ДЛЯ ИМПОРТА СБОРОК CURSEFORGE)</label>
+    <input id="curseKey" data-key="curseKey" class="field" type="password" placeholder="Ключ с console.curseforge.com" autocomplete="off">
+  </section>
+</main>
+
+<div id="updBanner" class="glass pill upd" hidden role="status">
+  <span id="updText"></span>
+  <button id="updBtn" class="btn small" hidden>Перезапустить</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
